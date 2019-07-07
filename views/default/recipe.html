@@ -1,0 +1,126 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var rate_recipe_url = "{{=URL('ratings_api', 'add_ratings', user_signature=True)}}"
+    var rerate_recipe_url = "{{=URL('ratings_api', 'update_ratings', user_signature=True)}}"
+
+    var favorite_recipe_url = "{{=URL('recipe_api', 'favorite_recipe', user_signature=True)}}"
+    var unfavorite_recipe_url = "{{=URL('recipe_api', 'unfavorite_recipe', user_signature=True)}}"
+
+    var delete_recipe_url = "{{=URL('recipe_api', 'delete_recipe', user_signature=True)}}"
+</script>
+<link href="{{=URL('static','css/recipe.css')}}" rel="stylesheet" type="text/css"/>
+{{end}}
+
+<div class="main_content">
+    <input type="number" id="recipe_id" value={{=recipe.id}} hidden>
+    {{if auth.user_id != recipe.created_by:}}
+        <input type="text" id="recipe_favorited" value={{=recipe.favorited}} hidden>
+        <input type="number" id="recipe_user_rating" value={{=recipe.user_rating}} hidden>
+        <input type="number" id="recipe_total_score" value={{=recipe.total_score}} hidden>
+        <input type="number" id="recipe_vote_count" value={{=recipe.vote_count}} hidden>
+    {{pass}}
+    <div id="vue-div" class="display:none">
+        <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+        <div class="centered">
+            <div class="recipe_top container">
+                <div class="recipe_information twothirds compressible">
+                    <p class="recipe_title">
+                        {{=recipe.title}}
+                    </p>
+                    <p class="recipe_info">
+                        <span class="time_required">
+                            <i class="fa fa-lg fa-clock-o"></i> {{=recipe.time_required}}
+                        </span>
+                        <span class="serving_size">
+                             <i class="fa fa-lg fa-pie-chart"></i> {{=recipe.serving_size}} {{if recipe.serving_size == 1:}}serving{{else:}}servings{{pass}}
+                        </span>
+                    </p>
+                    <p class="recipe_description">
+                        {{=recipe.description}}
+                    </p>
+                    <div class="tags">
+                        {{for tag in recipe.tags:}}
+                            <span class="tag">{{=tag}}</span>
+                        {{pass}}
+                    </div>
+                </div>
+                <div class="recipe_image third compressible">
+                    <img src={{=recipe.image_url}} />
+                    {{if auth.user_id != recipe.created_by:}}
+                        <p class="ratings_info">
+                            <i v-if="favorited" 
+                               v-on:click="unfavorite_recipe"
+                               class="fa fa-heart heart"></i>
+                            <i v-if="!favorited"
+                               v-on:click="favorite_recipe" 
+                               class="fa fa-heart-o heart"></i>
+                            <span v-on:mouseout="mouseout_stars">
+                                <span v-for="i in 5"
+                                      v-on:mouseover="update_stars_displayed(i)"
+                                      v-on:click="set_rating(i)"
+                                      class="star">
+                                <i v-if="i <= stars_displayed"
+                                   class="fa fa-lg fa-star"></i>
+                                <i v-if="i > stars_displayed"
+                                   class="fa fa-lg fa-star-o"></i>
+                            </span>
+                            <span v-if="user_rating == 0" class="vote_count">
+                                ({{=recipe.vote_count}})
+                            </span>
+                        </p>            
+                    {{else:}}
+                        <a href="{{=URL('default', 'edit_form', vars=dict(recipe_id=recipe.id))}}" class="edit_button btn">Edit</a>
+                        <button class="delete_button" v-on:click="delete_recipe">Delete</button>
+
+                    {{pass}}
+                </div>
+            </div>
+
+            <hr class="centered">
+
+            <div class="recipe_ingredients">
+                <div class="ingredients_header">Ingredients</div>
+                {{index = 0}}
+                <ul class="ingredients">
+                    {{while index < len(recipe.ingredients):}}
+                        <li class="ingredient">{{=recipe.quantities[index]}} {{=recipe.ingredients[index]}}
+                        {{index = index + 1}}</li>
+                    {{pass}}
+                </ul>
+            </div>
+
+            <hr class="centered">
+
+            {{if recipe.instructions:}}
+                <div class="recipe_instructions_div">
+                    <div class="instructions_header">Instructions</div>
+                    <span class="recipe_instructions">
+                        {{=recipe.instructions}}
+                    </span>
+                </div>
+
+                <hr class="centered">
+            {{pass}}
+
+            {{if recipe.notes:}}
+                <div class="recipe_notes_div">
+                    <div class="notes_header">Author's Notes</div>
+                    <span class="recipe_notes">
+                        {{=recipe.notes}}
+                    </span>
+                </div>
+
+                <hr class="centered">
+            {{pass}}
+
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_recipe.js')}}"></script>

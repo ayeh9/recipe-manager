@@ -1,0 +1,183 @@
+.colorful {
+  color: #bb8833;
+}
+
+.centered {
+	width: 800px !important;
+	margin-right: auto !important;
+	margin-left: auto !important;
+}
+
+.header {
+	margin-top: 0em !important;
+	margin-bottom: 0em !important;
+	word-wrap: break-word;
+	text-align: left;
+}
+
+hr {
+	border-bottom: 1px solid #cccccc;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+div.main_content {
+	text-align: center;
+	padding: 1em;
+}
+
+div.recipe_information p.recipe_title {
+	white-space: normal;
+	color: #333333;
+	font-size: 2.5em;
+	font-weight: bold;
+	margin-bottom: 0.25em;
+}
+
+div.recipe_information p.recipe_info {
+	font-size: 1em;
+}
+
+div.recipe_information p.recipe_info span {
+	padding-right: 1em;
+}
+
+div.recipe_information p.recipe_description {
+	color: #505050;
+	font-size: 1em;
+	white-space: normal;
+}
+
+div.recipe_information div.tags {
+	text-align: left;
+}
+
+div.recipe_information div.tags span.tag {
+	background-color: #60A0E0;
+}
+
+div.recipe_ingredients {
+	text-align: left;
+}
+
+div.recipe_ingredients div.ingredients_header {
+	white-space: normal;
+	color: #333333;
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+div.recipe_ingredients ul.ingredients {
+	margin-top: 10px;
+}
+
+div.recipe_ingredients ul.ingredients li.ingredient {
+}
+
+div.recipe_instructions_div {
+	text-align: left;
+}
+
+div.recipe_instructions_div div.instructions_header {
+	white-space: normal;
+	color: #333333;
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+div.recipe_instructions_div span.recipe_instructions {
+	padding-left: 20px;
+	white-space: pre-wrap;
+}
+
+
+div.recipe_notes_div {
+	text-align: left;
+}
+
+div.recipe_notes_div div.notes_header {
+	white-space: normal;
+	color: #333333;
+	font-size: 1.5em;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+div.recipe_notes_div span.recipe_notes {
+	padding-left: 20px;
+	white-space: pre-wrap;
+}
+
+
+div.recipe_ingredients span.instructions_header {
+	white-space: normal;
+	color: #333333;
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+
+
+div.recipe_image img {
+	width: 100%;
+	height: 253px;
+	border: 1px solid #ccc;
+}
+
+i.heart {
+	float: right;
+	font-weight: bold;
+	color: #c84b4b;
+	font-size: 1.33em;
+}
+
+i.heart:hover {
+	cursor: pointer;
+}
+
+span.star {
+	cursor: default;
+}
+
+span.star i {
+	color: #ff9900;
+	font-size: 1.33em;
+}
+
+span.vote_count {
+	color: #707070;
+}
+
+a.edit_button {
+	margin-top: 5px;
+	width: 40%;
+	background-color: #e2e2e2;
+	color: gray;
+	font-weight: bold;
+}
+
+a.edit_button:hover {
+	border: 1px solid #cccccc;
+	box-shadow: none;
+	color: #333333;
+	cursor: default;
+}
+
+
+button.delete_button {
+	margin-top: 5px;
+	width: 40%;
+	background-color: #e2e2e2;
+	color: gray;
+	font-weight: bold;
+}
+
+button.delete_button:hover {
+	border: 1px solid #cccccc;
+	box-shadow: none;
+	color: #333333;
+	cursor: default;
+}
+

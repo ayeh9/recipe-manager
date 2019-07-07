@@ -1,0 +1,323 @@
+.colorful {
+  color: #bb8833;
+}
+
+.centered {
+	width: 800px !important;
+	margin-right: auto !important;
+	margin-left: auto !important;
+}
+
+.header {
+	margin-top: 0em !important;
+	margin-bottom: 0em !important;
+	word-wrap: break-word;
+	text-align: left;
+}
+
+hr {
+	border-bottom: 1px solid #cccccc;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+div.main_content {
+	text-align: center;
+	padding: 1em;
+}
+
+/* Search Page CSS */
+
+input#ingredients_bar {
+	margin-bottom: 1em;
+	font-size: 125%;
+	border: 1px solid #ddd !important;
+}
+
+span.no_text {
+	color: #333333;
+	font-size: 1em;
+	font-weight: bold;
+}	
+}
+
+a.login_button {
+	width: 200px;
+	margin-bottom: 1em;
+	background-color: #e2e2e2;
+
+	color: gray;
+	font-weight: bold;	
+}
+
+a.login_button:hover {
+	border: 1px solid #cccccc;
+	box-shadow: none;
+	color: #333333;
+	cursor: default;
+}
+
+button.search_button {
+	width: 200px;
+	height: 4em;
+	margin-right: 1em;
+	margin-bottom: 1em;
+	background-color: #f2f2f2;
+
+	color: gray;
+	font-weight: bold;
+}
+
+button.search_button:hover {
+	border: 1px solid #cccccc;
+	box-shadow: none;
+	color: #333333;
+	cursor: default;
+}
+
+div.ingredients_list {
+	text-align: justify;
+	margin-bottom: 1em;
+}
+
+div.ingredients_list span {
+	font-size: 85%;
+	font-weight: bold;
+	padding-right: 1em;
+}
+
+div.ingredients_list a.ingredient {
+	padding-top: 0.25em;
+	padding-bottom: 0.25em;
+}
+
+div.ingredients_list a.included {
+	background-color: #5fc85f !important;
+}
+
+div.ingredients_list a.excluded {
+	background-color: #c84b4b !important;
+}
+
+div.ingredients_list a.ingredient:hover {
+	box-shadow: none;
+	cursor: default;
+}
+
+div.ingredients_list a.ingredient i:hover {
+	cursor: pointer;
+}
+
+
+/* Search Results Page CSS */
+
+div.results_header p.title {
+	text-align: justify;
+	padding-top: 0.5em;
+}
+
+div.results_header p.title i.back_button {
+	color: gray;
+	padding-right: 0.5em;
+}
+
+div.results_header p.title i.back_button:hover {
+	color: #333333;
+	cursor: pointer;
+}
+
+p.title span.title_text {
+	font-size: 2em;
+}
+
+
+div.search_terms {
+	text-align: justify;
+}
+
+span.search_term_header {
+	font-weight: bold;
+}
+
+span.search_term_text {
+	font-size: 75%;
+	color: #333333;
+	text-align: justify;
+}
+
+/* Style the tab */
+div.tab {
+    overflow: hidden;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+div.tab button.tablinks {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    margin: 0em 0em;
+    transition: 0.3s;
+
+    color: black;
+    font-size: 1.5em;
+}
+
+/* Change background color of buttons on hover */
+div.tab button.tablinks:hover {
+    background-color: #ddd;
+    box-shadow: none;
+    cursor: default;
+}
+
+div.tab button.tablinks.selected {
+	background-color: white;
+	border-bottom: none;
+}
+
+div.tab span.page_range {
+	padding-top: 3em;
+	padding-right: 1em;
+
+	float: right;
+	font-size: 75%;
+}
+
+span.page_range span.bold {
+	font-weight: bold;
+}
+
+div.tab_content {
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+div.tab_content div.progress {
+	background-color: #acd1ec !important;
+}
+
+div.tab_content div.progress div.indeterminate {
+	background-color: #265ea6 !important;
+}
+
+div.tab_content div.no_results_div {
+	text-align: left;
+	padding: 0.5em 1em;
+}
+
+div.tab_content div.no_results_div span.no_results_text {
+	color: #333333;
+	font-size: 2em;
+	font-weight: bold;
+}
+
+div.tab_content div.recipes_container {
+	padding-top: 0.5em;
+}
+
+div.recipes_container div.recipe_container {
+	/*margin: 0em 0.5em;
+	border: 1px solid #ccc;*/
+	padding: 0.5em;
+	border-top: 1px solid #ccc;
+	min-height: 169px;
+}
+
+div.recipe_container img {
+	border: 1px solid #ccc;
+	float: left;
+	height: 150px;
+	width: 150px;
+	margin-right: 1.0em;
+}
+
+div.recipe_container div.text_content {
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+	text-align: left;
+}
+
+div.recipe_container div.text_content p {
+	margin-bottom: 5px !important;
+}
+
+div.recipe_container div.text_content p.recipe_name {
+	white-space: nowrap;
+	overflow: hidden;
+	color: #333333;
+	font-size: 2em;
+	font-weight: bold;
+	text-overflow: ellipsis;
+}
+
+div.recipe_container div.text_content p.recipe_info {
+	font-size: 0.8em;
+}
+
+div.recipe_container div.text_content span.time_required {
+	padding-right: 1em;
+	color: #333333;
+}
+
+div.recipe_container div.text_content span.serving_size {
+	padding-right: 1em;
+	color: #333333;
+}
+
+div.recipe_container div.text_content span.star {
+	cursor: default;
+}
+
+div.recipe_container div.text_content span.star i {
+	color: #ff9900;
+}
+
+div.recipe_container div.text_content span.vote_count {
+	color: #707070;
+}
+
+div.recipe_container div.text_content p.recipe_description {
+	color: #707070;
+	font-size: 0.8em;
+	white-space: nowrap;
+}
+
+div.recipe_container div.tags {
+}
+
+
+div.recipe_container div.tags span.tag {
+	background-color: #60A0E0;
+}
+
+
+div.tab_content div.change_page {
+	border-top: 1px solid #ccc;
+	height: 1.8em;
+}
+
+div.tab_content div.change_page i {
+	color: gray;
+}
+
+div.tab_content div.change_page i:hover {
+	color: #333333;
+	cursor: pointer;
+}
+
+div.tab_content div.change_page i.prev_page {
+	padding: 0.25em 0em 0.25em 0.25em;
+	float: left;
+}
+
+div.tab_content div.change_page i.next_page {
+	padding: 0.25em 0.25em 0.25em 0em;
+	float: right;
+}

@@ -1,0 +1,164 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var recipe_url = "{{=URL('default', 'recipe')}}"
+    var has_recipes_url = "{{=URL('search', 'has_users_recipes', user_signature=True)}}"
+    var search_recipes_url = "{{=URL('search', 'users_recipes', user_signature=True, hash_vars=False)}}"
+</script>
+<link href="{{=URL('static','css/recipes.css')}}" rel="stylesheet" type="text/css"/>
+{{end}}
+
+<div class="main_content">
+
+    <div id="vue-div" class="display:none">
+        <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+
+        <div class="results_header centered">
+           <p class="title">
+                <i class="fa fa-2x fa-cutlery"></i>
+                <span class="title_text"> Recipes</span>
+                <a href="{{=URL('default', 'add_form')}}" class="add_button btn"><i class="fa fa-lg fa-plus"></i> Add Recipe</a>
+            </p>
+        </div>
+
+        <div class="tab centered">
+            <button class="tablinks"
+                    v-bind:class="{selected: current_tab == 0}"
+                    v-on:click="switch_tabs(0)">
+                My Recipes
+            </button>
+            <button class="tablinks"
+                    v-bind:class="{selected: current_tab == 1}"
+                    v-on:click="switch_tabs(1)">
+                Favorited Recipes
+            </button>
+            <span v-if="current_tab == 0 && users_results.total > 0"
+                  class="page_range">
+                <span class="bold">${users_results.start_index}</span> - <span class="bold">${users_results.end_index}</span> of <span class="bold">${users_results.total}</span>
+            </span>
+            <span v-if="current_tab == 1 && favs_results.total > 0"
+                  class="page_range">
+                <span class="bold">${favs_results.start_index}</span> - <span class="bold">${favs_results.end_index}</span> of <span class="bold">${favs_results.total}</span>
+            </span>
+        </div>
+
+        <div class="tab_content centered">
+
+            <div v-if="current_tab == 0">
+                <div v-if="users_results.is_searching" class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+
+                <div v-if="!users_results.is_searching">
+                    <div v-if="users_results.total <= 0" class="no_results_div">
+                        <span class="no_user_results_text">
+                            You haven't added any recipes yet.<br>
+                            Click the "<i class="fa fa-lg fa-plus"></i> Add Recipe" button above to add one.
+                        </span>
+                    </div>
+
+                    <div v-if="users_results.total > 0">
+                        <div class="recipes_container centered">
+                            <div v-for="recipe in users_results.recipes">
+                                <a v-bind:href="get_recipe_url(recipe.id)" target="_blank">
+                                    <div class="recipe_container">
+                                        <img v-bind:src="recipe.image_url"/>
+                                        <div class="text_content">
+                                            <p class="recipe_name">${recipe.title}</p>
+                                            <p class="recipe_info">
+                                                <span class="time_required">
+                                                    <i class="fa fa-lg fa-clock-o"></i> ${recipe.time_required}
+                                                </span>
+                                                <span class="serving_size">
+                                                     <i class="fa fa-lg fa-pie-chart"></i> ${recipe.serving_size} serving
+                                                </span>
+                                            </p>
+                                            <p class="recipe_description">${recipe.description | truncate(330) }</p>
+                                            <div class="tags centered">
+                                                <span v-for="tag in recipe.tags" class="tag">${tag}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="change_page">
+                        <i v-if="users_results.page_number != 1"
+                           v-on:click="prev_page('user')"
+                           class="fa fa-lg fa-arrow-left prev_page"></i>
+
+                        <i v-if="users_results.page_number * 10 < users_results.total"
+                           v-on:click="next_page('user')"
+                           class="fa fa-lg fa-arrow-right next_page"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="current_tab == 1">
+                <div v-if="favs_results.is_searching" class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+
+                <div v-if="!favs_results.is_searching">
+                    <div v-if="favs_results.total <= 0" class="no_results_div">
+                        <span class="no_favorites_results_text">
+                            You haven't favorited any recipes yet.<br>
+                            Head to the <a class="browse_link" href="{{=URL('default', 'browse')}}">Browse</a> page to find new recipes!
+                        </span>
+                    </div>
+
+                    <div v-if="favs_results.total > 0">
+                        <div class="recipes_container centered">
+                            <div v-for="recipe in favs_results.recipes">
+                                <a v-bind:href="get_recipe_url(recipe.id)" target="_blank">
+                                    <div class="recipe_container">
+                                        <img v-bind:src="recipe.image_url"/>
+                                        <div class="text_content">
+                                            <p class="recipe_name">${recipe.title}</p>
+                                            <p class="recipe_info">
+                                                <span class="time_required">
+                                                    <i class="fa fa-lg fa-clock-o"></i> ${recipe.time_required}
+                                                </span>
+                                                <span class="serving_size">
+                                                     <i class="fa fa-lg fa-pie-chart"></i> ${recipe.serving_size} serving
+                                                </span>
+                                                <span v-for="i in 5" class="star">
+                                                    <i v-if="i <= recipe.stars_displayed" class="fa fa-lg fa-star"></i>
+                                                    <i v-if="i > recipe.stars_displayed" class="fa fa-lg fa-star-o"></i>
+                                                </span>
+                                                <span v-if="recipe.user_rating == null" class="vote_count">
+                                                    (${recipe.vote_count})
+                                                </span>
+                                            </p>
+                                            <p class="recipe_description">${recipe.description | truncate(330) }</p>
+                                            <div class="tags centered">
+                                                <span v-for="tag in recipe.tags" class="tag">${tag}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="change_page">
+                        <i v-if="favs_results.page_number != 1"
+                           v-on:click="prev_page('favorites')"
+                           class="fa fa-lg fa-arrow-left prev_page"></i>
+
+                        <i v-if="favs_results.page_number * 10 < favs_results.total"
+                           v-on:click="next_page('favorites')"
+                           class="fa fa-lg fa-arrow-right next_page"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_recipes.js')}}"></script>

@@ -1,0 +1,32 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var my_url = "{{=URL('api', 'my_method')}}";
+    var add_recipe_url = "{{=URL('recipe_api', 'add_recipe', user_signature=True)}}"
+    var favorite_recipe_url = "{{=URL('recipe_api', 'favorite_recipe', user_signature=True)}}"
+    var unfavorite_recipe_url = "{{=URL('recipe_api', 'unfavorite_recipe', user_signature=True)}}"
+    var has_recipes_url = "{{=URL('search', 'has_users_recipes', user_signature=True)}}"
+    var search_recipes_url = "{{=URL('search', 'users_recipes', user_signature=True, hash_vars=False)}}"
+    var rate_recipe_url = "{{=URL('ratings_api', 'add_ratings', user_signature=True)}}"
+    var rerate_recipe_url = "{{=URL('ratings_api', 'update_ratings', user_signature=True)}}"
+</script>
+{{end}}
+
+<div class="main_content">
+
+    <div id="vue-div" class="display:none">
+        <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+        <button v-on:click='test_add_recipe'>Add Recipe</button><br>
+        <button v-on:click='test_favorite_recipe'>Favorite A Recipe</button><br>
+        <button v-on:click='test_unfavorite_recipe'>Unfavorite A Recipe</button><br>
+    	<button v-on:click='test_has_recipes'>Has Recipes</button><br>
+    	<button v-on:click='test_search_users_recipes'>Search Recipes</button><br>
+        <button v-on:click='test_rating_recipes'>Rate Recipes</button><br>
+        <button v-on:click='test_rerating_recipes'>Re-Rate Recipes</button><br>
+    </div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_test.js')}}"></script>

@@ -1,0 +1,227 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var recipe_url = "{{=URL('default', 'recipe')}}"
+    var logged_in_url = "{{=URL('api', 'is_logged_in')}}"
+    var has_recipes_url = "{{=URL('search', 'has_users_recipes', user_signature=True)}}"
+    var search_recipes_url = "{{=URL('search', 'users_recipes', user_signature=True, hash_vars=False)}}"
+</script>
+<link href="{{=URL('static','css/index.css')}}" rel="stylesheet" type="text/css"/>
+{{end}}
+
+<div class="main_content">
+
+    <div id="vue-div" class="display:none">
+        <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+        <div v-if="!logged_in">
+            <a href="{{=URL('default', 'user')}}" class="btn login_button">Login</a><br>
+        	<img src="{{=URL('static', 'images/popollo_logo.png')}}">
+    	</div>
+
+    	<div v-if="logged_in && !has_recipes">
+    		<p class="centered">
+                <span class="no_text">
+                    You don't have any recipes yet.<br>
+                    Go to <a class="recipes_link" href="{{=URL('default', 'recipes')}}">My Recipes</a> and click the "<i class="fa fa-lg fa-plus"></i> Add Recipe" button to add one,<br>
+                    or Head to the <a class="browse_link" href="{{=URL('default', 'browse')}}">Browse</a> page to find new recipes!
+                </span>
+            </p>
+    	</div>
+
+    	<div v-if="logged_in && has_recipes && !on_results_page">
+            <h5 class="header centered">Search through your recipes and favorited recipes by ingredients:</h5>
+    		<input id="ingredients_bar" class="centered" type="text" v-model="search_term" placeholder="Ingredient"/><br>
+
+            <button class="search_button" v-on:click="add_ingredient('inclusions')">Include Ingredient</button>
+            <button class="search_button" v-on:click="add_ingredient('exclusions')">Exclude Ingredient</button>
+            <button class="search_button" v-on:click="search">Search</button>
+
+            
+            <hr class="centered">
+
+    		<div v-if="!is_empty(inclusions)" class="ingredients_list centered">
+    			<span align="right">Include</span>
+    			<a v-for="ingredient in inclusions" 
+                   class="btn rounded included ingredient">
+    				${ingredient.name} <i class="fa fa-times" v-on:click="remove_ingredient('inclusions', ingredient._idx)"> </i>
+    			</a>
+                <hr class="centered">
+    		</div>
+
+    		<div v-if="!is_empty(exclusions)" class="ingredients_list centered">
+    			<span>Exclude</span>
+                <a v-for="ingredient in exclusions"
+                   class="btn rounded excluded ingredient">
+    				${ingredient.name} <i class="fa fa-times" v-on:click="remove_ingredient('exclusions', ingredient._idx)"> </i>
+    			</a>
+                <hr class="centered">
+    		</div>
+    	</div>
+
+
+    	<div v-if="logged_in && has_recipes && on_results_page">
+            <div class="results_header centered">
+               <p class="title">
+                    <i class="fa fa-2x fa-arrow-left back_button"
+                       v-on:click="back"></i>
+                    <i class="fa fa-2x fa-search"></i>
+                    <span class="title_text">Search Results</span>
+                </p>
+            </div>
+
+            <div class="search_ingredients">
+                <hr v-if="!is_empty(inclusions) || !is_empty(exclusions)" class="centered">
+
+                <div v-if="!is_empty(inclusions)" class="search_terms centered">
+                    <span class="search_term_text">
+                        <span class="search_term_header">Include: </span>${inclusions_string}
+                    </span>
+                </div>
+
+                <div v-if="!is_empty(exclusions)" class="search_terms centered">
+                    <span class="search_term_text">
+                        <span class="search_term_header">Exclude: </span>${exclusions_string}
+                    </span>
+                </div>
+
+                <hr v-if="!is_empty(inclusions) || !is_empty(exclusions)" class="centered">
+            </div>
+
+
+            <div class="tab centered">
+                <button class="tablinks"
+                        v-bind:class="{selected: current_tab == 0}"
+                        v-on:click="switch_tabs(0)">
+                    My Recipes
+                </button>
+                <button class="tablinks"
+                        v-bind:class="{selected: current_tab == 1}"
+                        v-on:click="switch_tabs(1)">
+                    Favorited Recipes
+                </button>
+                <span v-if="current_tab == 0 && users_results.total > 0"
+                      class="page_range">
+                    <span class="bold">${users_results.start_index}</span> - <span class="bold">${users_results.end_index}</span> of <span class="bold">${users_results.total}</span>
+                </span>
+                <span v-if="current_tab == 1 && favs_results.total > 0"
+                      class="page_range">
+                    <span class="bold">${favs_results.start_index}</span> - <span class="bold">${favs_results.end_index}</span> of <span class="bold">${favs_results.total}</span>
+                </span>
+            </div>
+
+            <div class="tab_content centered">
+
+                <div v-if="current_tab == 0">
+                    <div v-if="users_results.is_searching" class="progress">
+                        <div class="indeterminate"></div>
+                    </div>
+
+                    <div v-if="!users_results.is_searching">
+                        <div v-if="users_results.total <= 0" class="no_results_div">
+                            <span class="no_results_text">No recipes found.</span>
+                        </div>
+
+                        <div v-if="users_results.total > 0">
+                            <div class="recipes_container centered">
+                                <div v-for="recipe in users_results.recipes">
+                                    <a v-bind:href="get_recipe_url(recipe.id)" target="_blank">
+                                        <div class="recipe_container">
+                                            <img v-bind:src="recipe.image_url"/>
+                                            <div class="text_content">
+                                                <p class="recipe_name">${recipe.title}</p>
+                                                <p class="recipe_info">
+                                                    <span class="time_required">
+                                                        <i class="fa fa-lg fa-clock-o"></i> ${recipe.time_required}
+                                                    </span>
+                                                    <span class="serving_size">
+                                                         <i class="fa fa-lg fa-pie-chart"></i> ${recipe.serving_size} serving
+                                                    </span>
+                                                </p>
+                                                <p class="recipe_description">${recipe.description | truncate(330) }</p>
+                                                <div class="tags centered">
+                                                    <span v-for="tag in recipe.tags" class="tag">${tag}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="change_page">
+                                <i v-if="users_results.page_number != 1"
+                                   v-on:click="prev_page('user')"
+                                   class="fa fa-lg fa-arrow-left prev_page"></i>
+
+                                <i v-if="users_results.page_number * 10 < users_results.total"
+                                   v-on:click="next_page('user')"
+                                   class="fa fa-lg fa-arrow-right next_page"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="current_tab == 1">
+                    <div v-if="favs_results.is_searching" class="progress">
+                        <div class="indeterminate"></div>
+                    </div>
+
+                    <div v-if="!favs_results.is_searching">
+                        <div v-if="favs_results.total <= 0" class="no_results_div">
+                            <span class="no_results_text">No recipes found.</span>
+                        </div>
+
+                        <div v-if="favs_results.total > 0">
+                            <div class="recipes_container centered">
+                                <div v-for="recipe in favs_results.recipes">
+                                    <a v-bind:href="get_recipe_url(recipe.id)" target="_blank">
+                                         <div class="recipe_container">
+                                            <img v-bind:src="recipe.image_url"/>
+                                            <div class="text_content">
+                                                <p class="recipe_name">${recipe.title}</p>
+                                                <p class="recipe_info">
+                                                    <span class="time_required">
+                                                        <i class="fa fa-lg fa-clock-o"></i> ${recipe.time_required}
+                                                    </span>
+                                                    <span class="serving_size">
+                                                         <i class="fa fa-lg fa-pie-chart"></i> ${recipe.serving_size} serving
+                                                    </span>
+                                                    <span v-for="i in 5" class="star">
+                                                        <i v-if="i <= recipe.stars_displayed" class="fa fa-lg fa-star"></i>
+                                                        <i v-if="i > recipe.stars_displayed" class="fa fa-lg fa-star-o"></i>
+                                                    </span>
+                                                    <span v-if="recipe.user_rating == null" class="vote_count">
+                                                        (${recipe.vote_count})
+                                                    </span>
+                                                </p>
+                                                <p class="recipe_description">${recipe.description | truncate(330) }</p>
+                                                <div class="tags centered">
+                                                    <span v-for="tag in recipe.tags" class="tag">${tag}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="change_page">
+                                <i v-if="favs_results.page_number != 1"
+                                   v-on:click="prev_page('favorites')"
+                                   class="fa fa-lg fa-arrow-left prev_page"></i>
+
+                                <i v-if="favs_results.page_number * 10 < favs_results.total"
+                                   v-on:click="next_page('favorites')"
+                                   class="fa fa-lg fa-arrow-right next_page"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    	</div>
+    </div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>

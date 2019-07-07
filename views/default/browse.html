@@ -1,0 +1,167 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var recipe_url = "{{=URL('default', 'recipe')}}"
+    var browse_recipes_url = "{{=URL('search', 'browse_recipes', user_signature=True, hash_vars=False)}}"
+    var favorite_recipe_url = "{{=URL('recipe_api', 'favorite_recipe', user_signature=True)}}"
+    var unfavorite_recipe_url = "{{=URL('recipe_api', 'unfavorite_recipe', user_signature=True)}}"
+
+</script>
+<link href="{{=URL('static','css/browse.css')}}" rel="stylesheet" type="text/css"/>
+{{end}}
+
+<div class="main_content">
+
+    <div id="vue-div" class="display:none">
+        <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+    	<div v-if="!on_results_page">
+            <h5 class="header centered">Browse through other users' recipes by ingredients:</h5>
+    		<input id="ingredients_bar" class="centered" type="text" v-model="search_term" placeholder="Ingredient"/><br>
+            <p class="exclude_favorites_section centered">
+                <i class="fa fa-lg fa-square-o checkbox"
+                   v-if="!exclude_favorites"
+                   v-on:click="toggle_exclude_favorites()"></i>
+                <i class="fa fa-lg fa-check-square-o checkbox"
+                   v-if="exclude_favorites"
+                   v-on:click="toggle_exclude_favorites()"></i>Exclude favorited recipes
+            </p>
+
+            <button class="search_button" v-on:click="add_ingredient('inclusions')">Include Ingredient</button>
+            <button class="search_button" v-on:click="add_ingredient('exclusions')">Exclude Ingredient</button>
+            <button class="search_button" v-on:click="search">Search</button>
+
+            
+            <hr class="centered">
+
+    		<div v-if="!is_empty(inclusions)" class="ingredients_list centered">
+    			<span>Include</span>
+    			<a v-for="ingredient in inclusions" 
+                   class="btn rounded included ingredient">
+    				${ingredient.name} <i class="fa fa-times" v-on:click="remove_ingredient('inclusions', ingredient._idx)"> </i>
+    			</a>
+                <hr class="centered">
+    		</div>
+
+    		<div v-if="!is_empty(exclusions)" class="ingredients_list centered">
+    			<span>Exclude</span>
+                <a v-for="ingredient in exclusions"
+                   class="btn rounded excluded ingredient">
+    				${ingredient.name} <i class="fa fa-times" v-on:click="remove_ingredient('exclusions', ingredient._idx)"> </i>
+    			</a>
+                <hr class="centered">
+    		</div>
+    	</div>
+
+
+    	<div v-if="on_results_page">
+            <div class="results_header centered">
+               <p class="title">
+                    <i class="fa fa-2x fa-arrow-left back_button"
+                       v-on:click="back"></i>
+                    <i class="fa fa-2x fa-search"></i>
+                    <span class="title_text">Search Results</span>
+                </p>
+            </div>
+
+            <div class="search_ingredients">
+                <hr v-if="!is_empty(inclusions) || !is_empty(exclusions)" class="centered">
+
+                <div v-if="!is_empty(inclusions)" class="search_terms centered">
+                    <span class="search_term_text">
+                        <span class="search_term_header">Include: </span>${inclusions_string}
+                    </span>
+                </div>
+
+                <div v-if="!is_empty(exclusions)" class="search_terms centered">
+                    <span class="search_term_text">
+                        <span class="search_term_header">Exclude: </span>${exclusions_string}
+                    </span>
+                </div>
+
+                <hr v-if="!is_empty(inclusions) || !is_empty(exclusions)" class="centered">
+            </div>
+
+
+            <div class="tab centered">
+                <span class="tablinks">
+                    Recipes
+                </span>
+
+                <span v-if="results.total > 0" class="page_range">
+                    <span class="bold">${results.start_index}</span> - <span class="bold">${results.end_index}</span> of <span class="bold">${results.total}</span>
+                </span>
+            </div>
+
+            <div class="tab_content centered">
+
+                <div v-if="results.is_searching" class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+
+                <div v-if="!results.is_searching">
+                    <div v-if="results.total <= 0" class="no_results_div">
+                        <span class="no_results_text">No recipes found.</span>
+                    </div>
+
+                    <div v-if="results.total > 0">
+                        <div class="recipes_container centered">
+                            <div v-for="recipe in results.recipes">
+                                <a v-bind:href="get_recipe_url(recipe.id)" target="_blank">
+                                    <div class="recipe_container">
+                                        <img v-bind:src="recipe.image_url"/>
+                                        <div class="text_content">
+                                            <p class="recipe_header">
+                                                <span class="recipe_title">${recipe.title}</span>
+                                                <i v-if="recipe.favorited" 
+                                                   v-on:click="unfavorite_recipe(recipe._idx)"
+                                                   class="fa fa-heart heart"></i>
+                                                <i v-if="!recipe.favorited" 
+                                                   v-on:click="favorite_recipe(recipe._idx)" 
+                                                   class="fa fa-heart-o heart"></i>
+                                            </p>
+                                            <p class="recipe_info">
+                                                <span class="time_required">
+                                                    <i class="fa fa-lg fa-clock-o"></i> ${recipe.time_required}
+                                                </span>
+                                                <span class="serving_size">
+                                                     <i class="fa fa-lg fa-pie-chart"></i> ${recipe.serving_size} serving
+                                                </span>
+                                                <span v-for="i in 5" class="star">
+                                                    <i v-if="i <= recipe.stars_displayed" class="fa fa-lg fa-star"></i>
+                                                    <i v-if="i > recipe.stars_displayed" class="fa fa-lg fa-star-o"></i>
+                                                </span>
+                                                <span v-if="recipe.user_rating == null" class="vote_count">
+                                                    (${recipe.vote_count})
+                                                </span>
+                                            </p>
+                                            <p class="recipe_description">${recipe.description | truncate(330) }</p>
+                                            <div class="tags centered">
+                                                <span v-for="tag in recipe.tags" class="tag">${tag}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="change_page">
+                            <i v-if="results.page_number != 1"
+                               v-on:click="prev_page('favorites')"
+                               class="fa fa-lg fa-arrow-left prev_page"></i>
+
+                            <i v-if="results.page_number * 10 < results.total"
+                               v-on:click="next_page('favorites')"
+                               class="fa fa-lg fa-arrow-right next_page"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    	</div>
+    </div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_browse.js')}}"></script>

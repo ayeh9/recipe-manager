@@ -1,0 +1,100 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var my_url = "{{=URL('api', 'my_method')}}";
+    var my_recipes_home = "{{=URL('default', 'recipes')}}"
+    var add_recipe_url = "{{=URL('recipe_api', 'add_recipe', user_signature=True)}}";
+    var add_image_url = "{{=URL('recipe_api', 'add_recipe', user_signature=True)}}";
+</script>
+<link href="{{=URL('static','css/form.css')}}" rel="stylesheet" type="text/css"/>
+{{end}}
+
+
+
+<div class="main_content">
+
+
+    <div id="vue-div" class="display:none">
+        <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+        <div v-if="is_adding">
+	        <form methods="post" id="recipe_form">
+
+		        	<div class="form_top_left">
+		        		<fieldset>
+		        			<h3>Add Recipe</h3> <br><br><br><br>
+				       		Recipe Title:<br>
+							<input v-model="recipe_title" placeholder="Title" type="text"/><br>
+							Recipe Description:<br>
+							<input v-model="recipe_description" placeholder="Description" type="text"><br>
+							Recipe Cooking Time:<br>  
+							<input v-model="recipe_cooking_time" placeholder="Time" type="text"><br>
+							Recipe Serving Size:<br>
+							<input v-model="recipe_serving_size" placeholder="Size" type="text"><br>
+						</fieldset>
+					</div>
+
+					<div class="form_top_right">
+						<div v-if="recipe_image_url == ''">
+							Upload a cover Image:
+						</div> 
+						<input id="file_input" type="file" v-on:change="upload_file" accept="image/jpeg">
+
+						 <img v-bind:src="recipe_image_url"/>
+
+
+						<br>
+						<br>
+						<br>
+						<br>
+				
+					</div>
+
+
+				<div class="form_bottom">
+					Ingredients:<br>
+					<input v-model="added_ingredient_name" placeholder="Enter an ingredient" type="text" > 
+					<input v-model="added_ingredient_quantity" placeholder="Enter the quantity" type="text" >
+					<div class="submit">
+						<button v-on:click="add_ingredient_form()" type="button">Add Ingredient</button><br>
+					</div>
+					
+					<div v-for="ingredient in ingredients">
+						<i class="fa fa-lg fa-times" v-on:click="delete_ingredient(ingredient.ingredient)"></i>
+
+						<input type="text" v-model="ingredient.ingredient">
+         				<input type="text" v-model="ingredient.quantity">
+        				
+					</div><br>
+
+
+					Instructions:<br>
+					<textarea v-model="recipe_instructions" form="recipe_form" placeholder="Enter instructions here..."></textarea><br><br>
+					Author's Notes:<br>
+					<textarea v-model="recipe_author_notes" form="recipe_form" placeholder="Enter notes here..."></textarea><br>
+					Tags:<br>
+
+					<input v-model="added_tag" placeholder="Enter a tag" type="text" ><br>
+					<div class="submit">
+						<button v-on:click="add_tag_form()" type="button">Add Tag</button><br>
+					</div>
+					
+					<div v-for="tag in tags">
+						<i class="fa fa-lg fa-times" v-on:click="delete_tag(ingredient._idx)"></i>
+						<input type="text" v-model="tag">
+        				
+					</div><br>
+				</div>
+				<div class="submit">
+					<button v-on:click="add_recipe()" type="button">Add Recipe</button>
+				</div>
+				
+			</form>
+		</div>
+    </div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_form.js')}}"></script>
